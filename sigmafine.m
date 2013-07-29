@@ -7,6 +7,8 @@ input;
 dIepsI = mat(:,2);
 wsef = mat(:,1);
 [wse,epsmat] = getIepsI(qref_list,kirr,ref_dir,unref_dir);
+EF = EFmid + EFdirac;
+qcut = kcut;
 
 %# derived variables:
 %#-------------------

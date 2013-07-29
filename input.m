@@ -22,9 +22,6 @@ endif;
 %# kpoint which is being refined:
 global k = [0.03472222 0.68055556 0.00000000];
 
-%# absolute EF in eV:
-EF = 0.22475356; 
-
 %# refined kgrid (new kgrid is Nkx*S(1) ):
 S = [4 4]; 
 
@@ -36,17 +33,13 @@ global Gmat = [0.78013  -1.35122   0.00000;
                0.78013   1.35122   0.00000;
                0.00000   0.00000   0.33069];
 
-%# load symmetry reduced fine grid (has to be calculated first):
-load_bzkf = 0;
-
-%# radius of area around dirac point receiving refinement:
-qcut = 0.22129; 
-
-%# parameter for interpolation of heads of epsInv:
-wc_eps = 1.975;
+%# load in output file from epsilon refinement
+%# contains qcut and absolute Fermi energy
+load("epsilon_output");
 
 %# input for mini BZ plasmon pole model: 
 %# file should contain mat, w_eV and int_eV 
+%# can be obtained by running get_mBZ.m
 load("Derek72grid/1eV_doping/dIepsI/dIepsI_dat");
 
 %# list of qpoints that received epsilon-refinement:
@@ -55,8 +48,13 @@ qref_list = load("Derek72grid/1eV_doping/EpsInvDyn/qref_list");
 %# directories for refined and unrefined heads of epsilon inverse:
 ref_dir  = "Derek72grid/1eV_doping/EpsInvDyn/EpsInvDyn"; %# Nkx=72; 1 eV doping
 unref_dir= "Derek72grid/1eV_doping/ParaUnrefined2/epsInvR"; %# Nkx=72; 1 eV doping
-#ref_dir  = "36grid/0_7eV_doping/Refined/EpsInvDyn_"; %# Nkx=36; 0.7 eV doping
-#unref_dir= "36grid/0_7eV_doping/Unrefined/EpsInvDyn"; %# Nkx=36; 0.7 eV doping
+
+%# load symmetry reduced fine grid (has to be calculated first):
+load_bzkf = 0; %# 0 means no
+
+%# parameter for interpolation of heads of epsInv:
+%# this freq. (in eV) should be between the carrier and the pi-plasmon peaks for all refined q
+wc_eps = 1.975;
 
 %# obtain the unrefined results (use with S=[1 1]):
 global unref_flag = 0;
