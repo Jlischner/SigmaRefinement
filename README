@@ -1,0 +1,5 @@
+kpoint refinement for Berkeley GW self-energy calculation:
+
+i) change parameters in input.m
+ii) run sigmafine.m in octave
+iii) copy avg_file and indx_file to BerkeleyGW location and run 
