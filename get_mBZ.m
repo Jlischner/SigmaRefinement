@@ -1,31 +1,30 @@
-%# cutoff frequency:
-%# should be located between the carrier plasmon peak and the onset of 
-%# interband transition where epsinv is approximately zero
-wcut = 1.5;
-%# head of epsilon for smallest qpoint:
-epsinv = load("EpsInvDyn");
-%#*******************************************************************
+df = load("EpsInvDyn2_fine");
+dc = load("EpsInvDyn2");
 
-Nfreq = size(epsinv)(1);
+Nfine = size(df)(1);
+Ncoarse = size(dc)(1);
 
-%# find carrier plasmon peak position:
-[a,b] = min(epsinv(:,3));
-w_eV = epsinv(b,1);
+%# first stitch together d and d2:
+%# fine sampling from 0 to 1 eV
 
-%# find weight in carrier plasmon peak by integrating up to wcut:
-[a,b] = min(abs(wcut - epsinv(:,1)));
-int_eV = trapz( epsinv(1:b,1), epsinv(1:b,3));
+[a,b] = min(abs(1-dc(:,1)));
 
-%# get ImEpsInv without carrier plasmon peak;
-mat = zeros(Nfreq,2);
-mat(:,1) = epsinv(:,1);
+Nstitch = Nfine + Ncoarse-b;
+d = zeros(Nstitch,3);
+d(1:Nfine,:) = df;
+d(Nfine+1:Nstitch,:) = dc(b+1:Ncoarse,:);
 
-[a,b] = min(abs(wcut - epsinv(:,1)));
-mat(b+1:Nfreq,2) = epsinv(b+1:Nfreq,3);
+%# integrate IepsI up to 1.5 eV:
+[a,b] = min(d(:,3));
+w_eV = d(b,1);
 
-plot(epsinv(:,1),epsinv(:,3),'sr-',mat(:,1),mat(:,2),'sb-');axis([0 4 -2 0]);
-printf("epsinv(q,w) = aq * delta(w-wq) \n");
-printf("wq = %f eV \n",w_eV);
-printf("aq = %f eV \n",int_eV);
+[a,b] = min(abs(1.5-d(:,1)));
+int_eV = trapz(d(1:b,1),d(1:b,3));
+
+%# write out dIepsI;
+[a,b] = min(abs(1.5-dc(:,1)));
+mat = zeros(Ncoarse,2);
+mat(:,1) = dc(:,1);
+mat(b+1:Ncoarse,2) = dc(b+1:Ncoarse,3);
 
 save dIepsI_dat mat w_eV int_eV;
