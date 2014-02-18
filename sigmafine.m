@@ -38,7 +38,7 @@ global fact = 1/(vol*Nk);
 global lenS = prod(S);
 global d = 1/Nkx;
 global Nfreq = size(ws)(1);
-eta = G/Nkx/S(1) * vF * 27.21 * 2;
+eta = G/Nkx/S(1) * vF * 27.21;
 if(unref_flag == 1)
   eta = etaBGW;
 endif;
@@ -199,6 +199,21 @@ for indx1 = 1:Nk;
     
     #% interpolate energies:
     Ekqs= (1-t).*(1-u)*e1q + t.*(1-u)*e2q + t.*u*e3q + (1-t).*u*e4q;
+
+    Edirac = 0;
+    if( abs(e1q - Edirac) < 0.4 );
+      kqs= (1-t).*(1-u)*kq1 + t.*(1-u)*kq2 + t.*u*kq3 + (1-t).*u*kq4;
+      %# which dirac point is close
+      kdirac1 = [1/3 2/3 0];
+      kdirac2 = [2/3 1/3 0];
+      if( norm(kq1-kdirac1) < norm(kq1-kdirac2) );
+	kdirac = kdirac1;
+      else;
+	kdirac = kdirac2;
+      endif;
+      akqs = sqrt( sum( ((kqs - ones(lenS,1)*kdirac )*Gmat).^2,2) );
+      Ekqs = vF*sqrt( sum( akqs.^2, 2) ) + Edirac;
+    endif;
 
     #% calculate Coulomb potential on fine grid:
     qcoul = q1;
